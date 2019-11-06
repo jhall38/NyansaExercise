@@ -35,11 +35,11 @@ func (l urlHitList) Swap(i, j int) {
 
 //Computes a key we can use to represent the date which is also easily sortable
 func getDateKey(epochTs string) (int, error) {
-	epochTsInt, err := strconv.Atoi(epochTs) //we aren't going to worry about overflow here for simplicity... let's hope that people aren't using this service in 2038 :)
+	epochTsInt, err := strconv.ParseInt(epochTs, 10, 64)
 	if err != nil {
 		return 0, err
 	}
-	t := time.Unix(int64(epochTsInt), 0).UTC()
+	t := time.Unix(epochTsInt, 0).UTC()
 	key, err := strconv.Atoi(t.Format("20060102")) //Format is YYYYMMDD to make sorting easy while still parsable
 	if err != nil {
 		return 0, err
