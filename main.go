@@ -33,15 +33,6 @@ func (l urlHitList) Swap(i, j int) {
 	l[i], l[j] = l[j], l[i]
 }
 
-//Convert Date Key to formated string
-func formatDateFromKey(dateKey int) (string, error) {
-	dateKeyStr := strconv.Itoa(dateKey)
-	if len(dateKeyStr) != 8 {
-		return "", errors.New("Invalid date key: " + dateKeyStr)
-	}
-	return fmt.Sprintf("%s/%s/%s GMT", dateKeyStr[4:6], dateKeyStr[6:], dateKeyStr[:4]), nil
-}
-
 //Computes a key we can use to represent the date which is also easily sortable
 func getDateKey(epochTs string) (int, error) {
 	epochTsInt, err := strconv.Atoi(epochTs) //we aren't going to worry about overflow here for simplicity... let's hope that people aren't using this service in 2038 :)
@@ -54,6 +45,15 @@ func getDateKey(epochTs string) (int, error) {
 		return 0, err
 	}
 	return key, nil
+}
+
+//Convert Date Key to formated string
+func formatDateFromKey(dateKey int) (string, error) {
+	dateKeyStr := strconv.Itoa(dateKey)
+	if len(dateKeyStr) != 8 {
+		return "", errors.New("Invalid date key: " + dateKeyStr)
+	}
+	return fmt.Sprintf("%s/%s/%s GMT", dateKeyStr[4:6], dateKeyStr[6:], dateKeyStr[:4]), nil
 }
 
 //Parses the data line by line and returns the nested mapped data
