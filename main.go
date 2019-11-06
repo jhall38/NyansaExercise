@@ -33,11 +33,6 @@ func (l urlHitList) Swap(i, j int) {
 	l[i], l[j] = l[j], l[i]
 }
 
-type UrlHitsByDay struct {
-	Date    int
-	Urlhits []UrlHit
-}
-
 //Convert Date Key to formated string
 func formatDateFromKey(dateKey int) (string, error) {
 	dateKeyStr := strconv.Itoa(dateKey)
