@@ -56,9 +56,10 @@ func formatDateFromKey(dateKey int) (string, error) {
 	return fmt.Sprintf("%s/%s/%s GMT", dateKeyStr[4:6], dateKeyStr[6:], dateKeyStr[:4]), nil
 }
 
-//Parses the data line by line and returns the nested mapped data
-func parseData(scanner *bufio.Scanner) (map[int]map[string]int, error) {
+//Parses the data line by line and returns the nested mapped data and a sorted list of dates
+func parseData(scanner *bufio.Scanner) (map[int]map[string]int, []int, error) {
 	dateUrlHits := make(map[int]map[string]int)
+	var dates []int
 	for scanner.Scan() {
 		parts := strings.Split(scanner.Text(), "|")
 		if len(parts) != 2 {
@@ -79,18 +80,20 @@ func parseData(scanner *bufio.Scanner) (map[int]map[string]int, error) {
 		} else {
 			dateUrlHits[d] = make(map[string]int)
 			dateUrlHits[d][url] = 1
+			dates = append(dates, d)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return dateUrlHits, nil
+	sort.Ints(dates)
+
+	return dateUrlHits, dates, nil
 }
 
 func main() {
-
 	if len(os.Args) != 2 {
 		fmt.Println("One argument is needed! (path to input file)")
 		os.Exit(1)
@@ -102,16 +105,11 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	parsed, err := parseData(scanner)
+	parsed, dates, err := parseData(scanner)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var dates []int
-	for date, _ := range parsed {
-		dates = append(dates, date)
-	}
-	sort.Ints(dates)
 	for _, date := range dates {
 		formatedDate, err := formatDateFromKey(date)
 		if err != nil {
